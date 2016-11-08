@@ -38,9 +38,9 @@ def makeWebhookResult(req):
 
     plan = {'lowest': [40, '1 GB Data, Unlimited Standard National Talk and Text'],
             'low': [65, '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes'],
-            'medium': [85, '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes'],
-            'high': [100, '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes'],
-            'highest': [120, '3.5 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes']}
+            'medium': [85, '8 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes'],
+            'high': [100, '15 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes'],
+            'highest': [120, '20 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes and International Roaming']}
 
     if plan_type in plan.keys():
         speech = "For a monthly plan of $" + str(plan[plan_type][0]) + " you get " + plan[plan_type][1]
