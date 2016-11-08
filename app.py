@@ -42,7 +42,10 @@ def makeWebhookResult(req):
             '100': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes',
             '120': '3.5 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes'}
 
-    speech = "For monthly " + per_month + "$ you get " + plan[per_month]
+    if per_month in plan.keys():
+        speech = "For monthly " + per_month + "$ you get " + plan[per_month]
+    else:
+        speech = 'Monthly plans are available only for $40, 65, 85, 100 and 120'
 
     # zone = parameters.get("shipping-zone")
     # cost = {'Europe':100, 'North America':200, 'South America':300, 'Asia':400, 'Africa':500}
