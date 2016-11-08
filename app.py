@@ -29,12 +29,12 @@ def webhook():
 
 
 def makeWebhookResult(req):
-    if req.get("result").get("action") != "mobile.plan":
+    if req.get("result").get("action") != "show.mobile.plans":  # Intent?
         return {}
     result = req.get("result")
     parameters = result.get("parameters")
 
-    per_month = parameters.get("monthly-charge")
+    per_month = parameters.get("mobile-plan")  # parameter name
 
     plan = {'40': '1 GB Data, Unlimited Standard National Talk and Text',
             '65': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes',
