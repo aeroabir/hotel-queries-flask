@@ -36,11 +36,11 @@ def makeWebhookResult(req):
 
     per_month = parameters.get("mobile-plan")  # parameter name
 
-    plan = {'40': '1 GB Data, Unlimited Standard National Talk and Text',
-            '65': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes',
-            '85': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
-            '100': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes',
-            '120': '3.5 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes'}
+    plan = {'lowest': '1 GB Data, Unlimited Standard National Talk and Text',
+            'low': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes',
+            'medium': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
+            'high': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes',
+            'highest': '3.5 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes'}
 
     if per_month in plan.keys():
         speech = "For monthly " + per_month + "$ you get " + plan[per_month]
