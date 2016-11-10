@@ -35,7 +35,25 @@ def makeWebhookResult(req):
         plan_type = parameters.get("travel-plan")
         speech = 'Roaming plans are available only for $10 a day'
 
-    elif req.get("result").get("action") != "show.mobile.plans":  # action name
+    elif req.get("result").get("action") == "show.simonly.plans":  # action name
+        result = req.get("result")
+        parameters = result.get("parameters")
+
+        plan_type = parameters.get("mobile-plan")  # parameter name
+
+        # 2-yearly plans for phone+sim
+        plan = {'lowest': [40, '1 GB Data, Unlimited Standard National Talk and Text'],
+                'low': [65, '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes'],
+                'medium': [85, '8 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes'],
+                'high': [100, '15 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes'],
+                'highest': [120, '20 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes and International Roaming']}
+
+        if plan_type in plan.keys():
+            speech = "For a monthly plan of $" + str(plan[plan_type][0]) + " you get " + plan[plan_type][1]
+        else:
+            speech = 'Monthly plans are available only for $40, 65, 85, 100 and 120'
+
+    elif req.get("result").get("action") == "show.mobile.plans":  # action name
         result = req.get("result")
         parameters = result.get("parameters")
 
