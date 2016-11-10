@@ -41,7 +41,7 @@ def makeWebhookResult(req):
         parameters = result.get("parameters")
         period = parameters.get("plan-period")  # monthly or yearly
         user_input = parameters.get("unit-currency")  # parameter name
-        monthly_amount = user_input.get("amount")
+        monthly_amount = str(user_input.get("amount"))
 
         if period == "monthly":
 
@@ -49,8 +49,8 @@ def makeWebhookResult(req):
                     '50': '6 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
                     '60': '9 GB Data, Unlimited Standard National Talk and Text; Upto 500 International Minutes'}
 
-            if str(monthly_amount) in plan.keys():
-                speech = "For a monthly plan of $" + str(monthly_amount) + " you get " + plan[monthly_amount]
+            if monthly_amount in plan.keys():
+                speech = "For a monthly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
             else:
                 speech = 'Monthly plans are available only for $35, 50 and 60'
 
@@ -60,8 +60,8 @@ def makeWebhookResult(req):
                     '40': '6 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
                     '50': '9 GB Data, Unlimited Standard National Talk and Text; Upto 500 International Minutes'}
 
-            if str(monthly_amount) in plan.keys():
-                speech = "For a yearly plan of $" + str(monthly_amount) + "per month you get " + plan[monthly_amount]
+            if monthly_amount in plan.keys():
+                speech = "For a yearly plan of $" + monthly_amount + "per month you get " + plan[monthly_amount]
             else:
                 speech = 'Yearly plans are available only for $30, 40 and 50'
 
