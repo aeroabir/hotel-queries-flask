@@ -29,27 +29,30 @@ def webhook():
 
 
 def makeWebhookResult(req):
-    if req.get("result").get("action") != "show.mobile.plans":  # Intent?
-        return {}
-    result = req.get("result")
-    parameters = result.get("parameters")
+    if req.get("result").get("action") == 'show.travel.plans':
+        result = req.get("result")
+        parameters = result.get("parameters")
+        plan_type = parameters.get("travel-plan")
+        speech = 'Roaming plans are available only for $10 a day'
 
-    plan_type = parameters.get("mobile-plan")  # parameter name
+    elif req.get("result").get("action") != "show.mobile.plans":  # action name
+        result = req.get("result")
+        parameters = result.get("parameters")
 
-    plan = {'lowest': [40, '1 GB Data, Unlimited Standard National Talk and Text'],
-            'low': [65, '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes'],
-            'medium': [85, '8 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes'],
-            'high': [100, '15 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes'],
-            'highest': [120, '20 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes and International Roaming']}
+        plan_type = parameters.get("mobile-plan")  # parameter name
 
-    if plan_type in plan.keys():
-        speech = "For a monthly plan of $" + str(plan[plan_type][0]) + " you get " + plan[plan_type][1]
-    else:
-        speech = 'Monthly plans are available only for $40, 65, 85, 100 and 120'
+        # 2-yearly plans for phone+sim
+        plan = {'lowest': [40, '1 GB Data, Unlimited Standard National Talk and Text'],
+                'low': [65, '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes'],
+                'medium': [85, '8 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes'],
+                'high': [100, '15 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes'],
+                'highest': [120, '20 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes and International Roaming']}
 
-    # zone = parameters.get("shipping-zone")
-    # cost = {'Europe':100, 'North America':200, 'South America':300, 'Asia':400, 'Africa':500}
-    # speech = "The cost of shipping to " + zone + " is " + str(cost[zone]) + " euros."
+        if plan_type in plan.keys():
+            speech = "For a monthly plan of $" + str(plan[plan_type][0]) + " you get " + plan[plan_type][1]
+        else:
+            speech = 'Monthly plans are available only for $40, 65, 85, 100 and 120'
+
 
     print("Response:")
     print(speech)
