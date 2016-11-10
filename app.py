@@ -29,6 +29,7 @@ def webhook():
 
 
 def makeWebhookResult(req):
+
     if req.get("result").get("action") == 'show.travel.plans':
         result = req.get("result")
         parameters = result.get("parameters")
@@ -38,20 +39,34 @@ def makeWebhookResult(req):
     elif req.get("result").get("action") == "show.simonly.plans":  # action name
         result = req.get("result")
         parameters = result.get("parameters")
+        period = parameters.get("plan-period")  # monthly or yearly
+        user_input = parameters.get("unit-currency")  # parameter name
+        monthly_amount = user_input.get("amount")
 
-        plan_type = parameters.get("mobile-plan")  # parameter name
+        if period == "monthly":
 
-        # 2-yearly plans for phone+sim
-        plan = {'lowest': [40, '1 GB Data, Unlimited Standard National Talk and Text'],
-                'low': [65, '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes'],
-                'medium': [85, '8 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes'],
-                'high': [100, '15 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes'],
-                'highest': [120, '20 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes and International Roaming']}
+            plan = {'35': '1.5 GB Data, Unlimited Standard National Talk and Text',
+                    '50': '6 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
+                    '60': '9 GB Data, Unlimited Standard National Talk and Text; Upto 500 International Minutes'}
 
-        if plan_type in plan.keys():
-            speech = "For a monthly plan of $" + str(plan[plan_type][0]) + " you get " + plan[plan_type][1]
+            if str(monthly_amount) in plan.keys():
+                speech = "For a monthly plan of $" + str(monthly_amount) + " you get " + plan[monthly_amount]
+            else:
+                speech = 'Monthly plans are available only for $35, 50 and 60'
+
+        elif period == "yearly":
+
+            plan = {'30': '1.5 GB Data, Unlimited Standard National Talk and Text',
+                    '40': '6 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
+                    '50': '9 GB Data, Unlimited Standard National Talk and Text; Upto 500 International Minutes'}
+
+            if str(monthly_amount) in plan.keys():
+                speech = "For a yearly plan of $" + str(monthly_amount) + "per month you get " + plan[monthly_amount]
+            else:
+                speech = 'Yearly plans are available only for $30, 40 and 50'
+
         else:
-            speech = 'Monthly plans are available only for $40, 65, 85, 100 and 120'
+            speech = 'No matching plan found for ' + period
 
     elif req.get("result").get("action") == "show.mobile.plans":  # action name
         result = req.get("result")
