@@ -34,14 +34,19 @@ def makeWebhookResult(req):
         result = req.get("result")
         parameters = result.get("parameters")
         plan_type = parameters.get("travel-plan")
-        speech = 'Roaming plans are available only for $10 a day'
+        speech = 'Roaming plans are available for $10 a day'
 
     elif req.get("result").get("action") == "show.simonly.plans":  # action name
         result = req.get("result")
         parameters = result.get("parameters")
         period = parameters.get("plan-period")  # monthly or yearly
         user_input = parameters.get("unit-currency")  # parameter name
-        monthly_amount = str(user_input.get("amount"))
+        if user_input is dict and 'amount' in user_input:
+            monthly_amount = str(user_input.get("amount"))
+        elif 'number' in parameters:
+            monthly_amount = str(parameters.get('number'))
+        else:
+            monthly_amount = '100'
 
         if period == "monthly":
 
@@ -56,19 +61,19 @@ def makeWebhookResult(req):
 
         elif period == "yearly":
 
-            plan = {'30': '1.5 GB Data, Unlimited Standard National Talk and Text',
-                    '40': '6 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
-                    '50': '9 GB Data, Unlimited Standard National Talk and Text; Upto 500 International Minutes'}
+            plan = {'30': '1.5 GB Data and Unlimited Standard National Talk and Text',
+                    '40': '6 GB Data, Unlimited Standard National Talk and Text and Upto 300 International Minutes',
+                    '50': '9 GB Data, Unlimited Standard National Talk and Text and Upto 500 International Minutes'}
 
             if monthly_amount in plan.keys():
-                speech = "For a yearly plan of $" + monthly_amount + "per month you get " + plan[monthly_amount]
+                speech = "For a yearly plan of $" + monthly_amount + " per month you get " + plan[monthly_amount]
             else:
                 speech = 'Yearly plans are available only for $30, 40 and 50'
 
         else:
             speech = 'No matching plan found for ' + period
 
-    elif req.get("result").get("action") == "show.mobile.plans":  # action name
+    elif req.get("result").get("action") == "show.bundle.plans":  # action name
         result = req.get("result")
         parameters = result.get("parameters")
 
