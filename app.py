@@ -42,13 +42,12 @@ def makeWebhookResult(req):
         period = parameters.get("plan-period")  # monthly or yearly
         user_input = parameters.get("unit-currency")  # parameter name
 
-        monthly_amount = '100'
-
         if 'amount' in user_input:
             monthly_amount = str(user_input.get("amount"))
-
-        if 'number' in parameters:
+        elif 'number' in parameters:
             monthly_amount = str(parameters.get('number'))
+        else:
+            monthly_amount = '100'
 
         if period == "monthly":
 
@@ -59,7 +58,7 @@ def makeWebhookResult(req):
             if monthly_amount in plan.keys():
                 speech = "For a monthly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
             else:
-                speech = 'Monthly plans are available only for $35, 50 and 60'
+                speech = 'Monthly plans are available only for $35, 50 and 60. (you have entered "' + monthly_amount + '"'
 
         elif period == "yearly":
 
@@ -70,10 +69,10 @@ def makeWebhookResult(req):
             if monthly_amount in plan.keys():
                 speech = "For a yearly plan of $" + monthly_amount + " per month you get " + plan[monthly_amount]
             else:
-                speech = 'Yearly plans are available only for $30, 40 and 50'
+                speech = 'Yearly plans are available only for $30, 40 and 50. (you have entered "' + monthly_amount + '"'
 
         else:
-            speech = 'No matching plan found for ' + period
+            speech = 'No matching plan found for user-defined period: ' + period
 
     elif req.get("result").get("action") == "show.bundle.plans":  # action name
 
@@ -82,13 +81,12 @@ def makeWebhookResult(req):
         # period = parameters.get("plan-period")  # monthly or yearly
         user_input = parameters.get("unit-currency")  # parameter name
 
-        monthly_amount = '100'
-
         if 'amount' in user_input:
             monthly_amount = str(user_input.get("amount"))
-
-        if 'number' in parameters:
+        elif 'number' in parameters:
             monthly_amount = str(parameters.get('number'))
+        else:
+            monthly_amount = '100'
 
         # 2-yearly plans for phone+sim
         plan = {'40': '1 GB Data, Unlimited Standard National Talk and Text',
@@ -100,7 +98,7 @@ def makeWebhookResult(req):
         if monthly_amount in plan.keys():
             speech = "For a two-yearly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
         else:
-            speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120'
+            speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120. (you have entered "' + monthly_amount + '"'
     else:
         speech = 'No matching intent found ... python returns None'
 
