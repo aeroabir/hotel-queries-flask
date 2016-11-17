@@ -30,7 +30,20 @@ def webhook():
 
 def makeWebhookResult(req):
 
-    if req.get("result").get("action") == 'show.travel.plans':
+    if req.get("result").get("action") == 'get.coverage.url':
+        result = req.get("result")
+        parameters = result.get("parameters")
+        device_type = parameters.get("device_home")
+        if device_type == 'home':
+            speech = 'see: http://www.optus.com.au/shop/broadband/home-broadband'
+        elif device_type == 'mobile':
+            speech = 'please check: http://www.optus.com.au/about/network/service-status'
+        else:
+            speech = 'cannot find a suitable link for '+device_type
+
+
+
+    elif req.get("result").get("action") == 'show.travel.plans':
         result = req.get("result")
         parameters = result.get("parameters")
         plan_type = parameters.get("travel-plan")
@@ -58,7 +71,7 @@ def makeWebhookResult(req):
             if monthly_amount in plan.keys():
                 speech = "For a monthly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
             else:
-                speech = 'Monthly plans are available only for $35, 50 and 60. (you have entered "' + monthly_amount + '"'
+                speech = 'Monthly plans are available only for $35, 50 and 60. (you have entered "' + monthly_amount + '")'
 
         elif period == "yearly":
 
@@ -69,7 +82,7 @@ def makeWebhookResult(req):
             if monthly_amount in plan.keys():
                 speech = "For a yearly plan of $" + monthly_amount + " per month you get " + plan[monthly_amount]
             else:
-                speech = 'Yearly plans are available only for $30, 40 and 50. (you have entered "' + monthly_amount + '"'
+                speech = 'Yearly plans are available only for $30, 40 and 50. (you have entered "' + monthly_amount + '")'
 
         else:
             speech = 'No matching plan found for user-defined period: ' + period
@@ -98,7 +111,7 @@ def makeWebhookResult(req):
         if monthly_amount in plan.keys():
             speech = "For a two-yearly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
         else:
-            speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120. (you have entered "' + monthly_amount + '"'
+            speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120. (you have entered "' + monthly_amount + '")'
     else:
         speech = 'No matching intent found ... python returns None'
 
