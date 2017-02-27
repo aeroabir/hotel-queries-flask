@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 
 import urllib
+import datetime
 import json
 import os
 import random
 import requests
+import time
 from flask import Flask
 from flask import request
 from flask import make_response
@@ -125,10 +127,33 @@ def makeWebhookResult(req):
         result = req.get("result")
         parameters = result.get("parameters")
 
-        place = parameters.get("geo-city")
+        if 'geo-city' in parameters:
+            place = parameters.get("geo-city")
+        else:
+            place = 'London'
+
+        if 'start-date' in parameters:
+            start_date = parameters.get("start-date")
+        else:
+            start_date = time.strftime('%Y-%m-%d')  # today's date
+
+        if 'end-date' in parameters:
+            end_date = parameters.get("end-date")
+        else:
+            today = datetime.datetime.today()
+            tomorrow = today + datetime.timedelta(1)
+            end_date = datetime.datetime.strftime(tomorrow,'%Y-%m-%d')  # tomorrow's date
+
+        if 'cardinal' in parameters:
+            num_adults = int(cardinal)
+        else:
+            num_adults = 1
 
         try:
-            r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place})
+            # r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place})
+            r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place,
+                "adults": num_adults, "checkInDate": start_date, "checkOutDate": end_date,
+                "ratePlans": "RACK%2CPREPD%2CPROMO%2CSCPM", "rateType":"LOW_ALL"})
             # speech = "Requesting for " + place + ' found: ' + str(r.status_code) + r.reason
             if r.status_code == 200:
                 d = json.loads(r.text)
