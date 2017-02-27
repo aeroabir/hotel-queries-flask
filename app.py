@@ -119,7 +119,7 @@ def makeWebhookResult(req):
         else:
             speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120. (you have entered "' + monthly_amount + '")'
     else:
-        speech = 'No matching intent found ... python returns None'
+        speech = 'No matching intent found ... python code returns None'
 
 
     print("Response:")
