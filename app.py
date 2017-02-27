@@ -118,6 +118,11 @@ def makeWebhookResult(req):
             speech = "For a two-yearly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
         else:
             speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120. (you have entered "' + monthly_amount + '")'
+
+    elif req.get("result").get("action") == "show.hotels.in.an.area":  # action name
+
+        speech = 'No data stored yet ...'
+
     else:
         speech = 'No matching intent found ... python code returns None'
 
