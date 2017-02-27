@@ -131,11 +131,11 @@ def makeWebhookResult(req):
             r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place})
             # speech = "Requesting for " + place + ' found: ' + str(r.status_code) + r.reason
             if r.status_code == 200:
-                d = json.loads(r)
+                d = json.loads(r.text)
                 hotels = d['hotels']
                 hotel_names = [h['name'] for h in hotels]
                 hotel_names_string = '\t'.join(hotel_names)
-                speech = "Found " + len(hotels) + " hotels: " + hotel_names_string
+                speech = "Found " + str(d['totalHotelCount']) + " hotel(s): " + hotel_names_string
             else:
                 speech = "Requesting for " + place + ' found: ' + str(r.status_code) + r.reason
 
