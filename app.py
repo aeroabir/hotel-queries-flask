@@ -130,7 +130,7 @@ def makeWebhookResult(req):
 
         try:
             r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data=request_string)
-            speech = "Requesting for " + request_string
+            speech = "Requesting for " + request_string + ' found: ' + str(r.status_code) + r.reason
         except:
             speech = 'Not working for ' + request_string
 
