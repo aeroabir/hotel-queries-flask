@@ -119,7 +119,7 @@ def makeWebhookResult(req):
         else:
             speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120. (you have entered "' + monthly_amount + '")'
 
-    elif req.get("result").get("action") == "show.hotels.in.an.area":  # action name
+    elif req.get("result").get("action") == "show.hotels":  # action name
 
         speech = 'No data stored yet ...'
 
