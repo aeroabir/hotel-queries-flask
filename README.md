@@ -1,4 +1,4 @@
-#How to Provide Replies about Mobile Plans (or any other data) via Api.ai Webhook
+#How to Provide Replies about Hotel Queries (or any other data) via Api.ai Webhook
 
 This example shows how you can use Api.ai webhook to provide different data depending upon the query.
 
