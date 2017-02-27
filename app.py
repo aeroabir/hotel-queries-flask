@@ -4,6 +4,7 @@ import urllib
 import json
 import os
 import random
+import requests
 from flask import Flask
 from flask import request
 from flask import make_response
@@ -124,10 +125,10 @@ def makeWebhookResult(req):
         result = req.get("result")
         parameters = result.get("parameters")
 
-        place = parameters.get("place")
+        place = parameters.get("geo-city")
         request_string = '{"placeName": "' + place + '"}'
 
-        # r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data=request_string)
+        r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data=request_string)
         speech = 'Got ' + request_string
 
         # if r.status_code == 203:
