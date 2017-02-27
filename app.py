@@ -145,7 +145,7 @@ def makeWebhookResult(req):
             end_date = datetime.datetime.strftime(tomorrow,'%Y-%m-%d')  # tomorrow's date
 
         if 'cardinal' in parameters:
-            num_adults = int(cardinal)
+            num_adults = int(parameters.get('cardinal'))
         else:
             num_adults = 1
 
