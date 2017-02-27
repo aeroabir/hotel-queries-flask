@@ -34,12 +34,12 @@ def makeWebhookResult(req):
         result = req.get("result")
         parameters = result.get("parameters")
         device_type = parameters.get("device_home")
-        if device_type == 'home':
+        if device_type == 'home':  # broadband
             all_texts = ['see: http://www.optus.com.au/shop/broadband/home-broadband',
                          'check: http://www.optus.com.au/shop/broadband/home-broadband',
                          'visit: http://www.optus.com.au/shop/broadband/home-broadband']
             speech = random.sample(all_texts, 1)[0]
-        elif device_type == 'mobile':
+        elif device_type == 'mobile':  # mobile
             all_texts = ['please check: http://www.optus.com.au/about/network/service-status',
                          'you can check: http://www.optus.com.au/about/network/service-status',
                          'see: http://www.optus.com.au/about/network/service-status']
