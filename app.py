@@ -126,10 +126,10 @@ def makeWebhookResult(req):
         parameters = result.get("parameters")
 
         place = parameters.get("geo-city")
-        request_string = '{"placeName": "' + place + '"}'
+        # request_string = '{"placeName": "' + place + '"}'
 
         try:
-            r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data=request_string)
+            r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place})
             speech = "Requesting for " + request_string + ' found: ' + str(r.status_code) + r.reason
         except:
             speech = 'Not working for ' + request_string
