@@ -84,7 +84,7 @@ def makeWebhookResult(req):
 
         result = req.get("result")
         # parameters = result.get("parameters")
-        parameters = result.get("contexts")[0].get("parameters")  # data coming from context
+        parameters = result.get("contexts")[0].get("parameters")  # data coming from previous context
 
         if 'geo-city' in parameters:
             place = parameters.get("geo-city")
@@ -132,20 +132,20 @@ def makeWebhookResult(req):
                 # hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
                 hotel_ids = [h['id'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
                 selected_hotels = []
-                out_str = ''
+                # out_str = ''
                 for id in hotel_ids:
                     r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+id.lower(),
                                        data={"businessFunction": "view_hotel",
                                              "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
                     d2 = json.loads(r2.text)
                     descriptions = [a['description'] for a in d2['hotel']['amenities']]
-                    out_str += id + '--'.join(descriptions)
+                    # out_str += id + '--'.join(descriptions)
                     if specific_key in descriptions:
                         selected_hotels.append(hotel_id_dict[id])
 
                 hotel_names_string = '\t'.join(selected_hotels)
-                # speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
-                speech = out_str
+                speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
+                # speech = out_str
                 data = selected_hotels
             else:
                 speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + r.reason
