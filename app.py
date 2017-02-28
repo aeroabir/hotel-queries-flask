@@ -83,7 +83,8 @@ def makeWebhookResult(req):
     elif req.get("result").get("action") == "specific.answer":  # action name
 
         result = req.get("result")
-        parameters = result.get("parameters")
+        # parameters = result.get("parameters")
+        parameters = result.get("contexts")[0].get("parameters")  # data coming from context
 
         if 'geo-city' in parameters:
             place = parameters.get("geo-city")
