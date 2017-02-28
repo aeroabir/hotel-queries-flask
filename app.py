@@ -158,17 +158,22 @@ def makeWebhookResult(req):
             if r.status_code == 200:
                 d = json.loads(r.text)
                 hotels = d['hotels']
-                hotel_names = [h['name'] for h in hotels]
+                # hotel_names = [h['name'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
+                hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
                 hotel_names_string = '\t'.join(hotel_names)
-                speech = "Found " + str(d['totalHotelCount']) + " hotel(s): " + hotel_names_string
+                speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
+                data = hotel_names
             else:
-                speech = "Requesting for " + place + ' found: ' + str(r.status_code) + r.reason
+                speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + r.reason
+                data = {}
 
         except:
             speech = 'Not working for ' + place
+            data = {}
 
     else:
         speech = 'No matching intent found ... python code returns None'
+        data = {}
 
 
     print("Response:")
@@ -177,7 +182,7 @@ def makeWebhookResult(req):
     return {
         "speech": speech,
         "displayText": speech,
-        #"data": {},
+        "data": data,
         # "contextOut": [],
         "source": "apiai-onlinestore-shipping"
     }
