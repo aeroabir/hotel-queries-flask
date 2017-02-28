@@ -96,31 +96,75 @@ def makeWebhookResult(req):
         else:
             speech = 'No matching plan found for user-defined period: ' + period
 
-    elif req.get("result").get("action") == "show.bundle.plans":  # action name
+    elif req.get("result").get("action") == "specific.answer":  # action name
 
         result = req.get("result")
         parameters = result.get("parameters")
-        # period = parameters.get("plan-period")  # monthly or yearly
-        user_input = parameters.get("unit-currency")  # parameter name
 
-        if 'amount' in user_input:
-            monthly_amount = str(user_input.get("amount"))
-        elif 'number' in parameters:
-            monthly_amount = str(parameters.get('number'))
+        if 'geo-city' in parameters:
+            place = parameters.get("geo-city")
         else:
-            monthly_amount = '100'
+            place = 'London'
 
-        # 2-yearly plans for phone+sim
-        plan = {'40': '1 GB Data, Unlimited Standard National Talk and Text',
-                '65': '3.5 GB Data, Unlimited Standard National Talk and Text; Upto 150 International Minutes',
-                '85': '8 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
-                '100': '15 GB Data, Unlimited Standard National Talk and Text; Upto 400 International Minutes',
-                '120': '20 GB Data, Unlimited Standard National Talk and Text; Unlimited International Minutes and International Roaming'}
-
-        if monthly_amount in plan.keys():
-            speech = "For a two-yearly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
+        if 'start-date' in parameters:
+            start_date = parameters.get("start-date")
         else:
-            speech = 'Yearly plans are available only for $40, 65, 85, 100 and 120. (you have entered "' + monthly_amount + '")'
+            start_date = time.strftime('%Y-%m-%d')  # today's date
+
+        if 'end-date' in parameters:
+            end_date = parameters.get("end-date")
+        else:
+            today = datetime.datetime.today()
+            tomorrow = today + datetime.timedelta(1)
+            end_date = datetime.datetime.strftime(tomorrow,'%Y-%m-%d')  # tomorrow's date
+
+        if 'cardinal' in parameters:
+            num_adults = int(parameters.get('cardinal'))
+        else:
+            num_adults = 1
+
+        if 'specific_requests' in parameters:
+            specific_request = parameters.get("specific_requests")
+        else:
+            specific_request = 'NA'
+
+        if specific_request in ['pet']:
+            specific_key = 'Pet-friendly Hotel'
+        elif specific_request in ['free breakfast']:
+            specific_key = 'Free Hot Breakfast'
+
+        try:
+            r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place,
+                "adults": num_adults, "checkInDate": start_date, "checkOutDate": end_date,
+                "ratePlans": "RACK%2CPREPD%2CPROMO%2CSCPM", "rateType":"LOW_ALL"})
+            if r.status_code == 200:
+                d = json.loads(r.text)
+                hotels = d['hotels']
+                hotel_id_dict = {}
+                for h in hotels:
+                    hotel_id_dict[h['id']] = h['name']
+                # hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
+                hotel_ids = [h['id'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
+                selected_hotels = []
+                for id in hotel_ids:
+                    r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+id.lower(),
+                                       data={"businessFunction": "view_hotel",
+                                             "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
+                    d2 = json.loads(r2.text)
+                    descriptions = [a['description'] for a in d2['hotel']['amenities']]
+                    if specific_request in descriptions:
+                        selected_hotels.append(hotel_id_dict[id])
+
+                hotel_names_string = '\t'.join(selected_hotels)
+                speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
+                data = selected_hotels
+            else:
+                speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + r.reason
+                data = {}
+
+        except:
+            speech = 'Not working for ' + place
+            data = {}
 
     elif req.get("result").get("action") == "show.hotels":  # action name
 
