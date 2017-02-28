@@ -128,7 +128,7 @@ def makeWebhookResult(req):
         else:
             specific_request = 'NA'
 
-        if specific_request in ['pet']:
+        if specific_request in ['pet', 'pets']:
             specific_key = 'Pet-friendly Hotel'
         elif specific_request in ['free breakfast']:
             specific_key = 'Free Hot Breakfast'
@@ -152,7 +152,7 @@ def makeWebhookResult(req):
                                              "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
                     d2 = json.loads(r2.text)
                     descriptions = [a['description'] for a in d2['hotel']['amenities']]
-                    if specific_request in descriptions:
+                    if specific_key in descriptions:
                         selected_hotels.append(hotel_id_dict[id])
 
                 hotel_names_string = '\t'.join(selected_hotels)
