@@ -67,14 +67,18 @@ def makeWebhookResult(req):
         else:
             property_code = 'ma199'
 
-        r = requests.post("https://www.choicehotels.com/webapi/hotel/"+ property_code.lower(),
-                           data={"businessFunction": "view_hotel",
-                                 "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
-        d = json.loads(r.text)
-        descriptions = [a['description'] for a in d['hotel']['amenities']]
-        out_string = ' '.join(descriptions)
-        speech = "Following amenities are available in " + property_code + ": " + out_string
-        data = descriptions
+        try:
+            r = requests.post("https://www.choicehotels.com/webapi/hotel/"+ property_code.lower(),
+                               data={"businessFunction": "view_hotel",
+                                     "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
+            d = json.loads(r.text)
+            descriptions = [a['description'] for a in d['hotel']['amenities']]
+            out_string = ' '.join(descriptions)
+            speech = "Following amenities are available in " + property_code + ": " + out_string
+            data = descriptions
+        except:
+            speech = 'Cannot fetch any data for ' + property_code
+            data = {}
 
     elif req.get("result").get("action") == "specific.answer":  # action name
 
@@ -108,9 +112,10 @@ def makeWebhookResult(req):
         else:
             specific_request = 'NA'
 
+        specific_key = 'NA'
         if specific_request in ['pet', 'pets']:
             specific_key = 'Pet-friendly Hotel'
-        elif specific_request in ['free breakfast']:
+        elif specific_request in ['free breakfast', 'breakfast']:
             specific_key = 'Free Hot Breakfast'
 
         try:
@@ -126,17 +131,20 @@ def makeWebhookResult(req):
                 # hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
                 hotel_ids = [h['id'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
                 selected_hotels = []
+                out_str = ''
                 for id in hotel_ids:
                     r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+id.lower(),
                                        data={"businessFunction": "view_hotel",
                                              "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
                     d2 = json.loads(r2.text)
                     descriptions = [a['description'] for a in d2['hotel']['amenities']]
+                    out_str += id + '--'.join(descriptions)
                     if specific_key in descriptions:
                         selected_hotels.append(hotel_id_dict[id])
 
                 hotel_names_string = '\t'.join(selected_hotels)
-                speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
+                # speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
+                speech = out_str
                 data = selected_hotels
             else:
                 speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + r.reason
