@@ -58,43 +58,23 @@ def makeWebhookResult(req):
         plan_type = parameters.get("travel-plan")
         speech = 'Roaming plans are available for $10 a day'
 
-    elif req.get("result").get("action") == "show.simonly.plans":  # action name
+    elif req.get("result").get("action") == "get.property.details":  # action name
         result = req.get("result")
         parameters = result.get("parameters")
-        period = parameters.get("plan-period")  # monthly or yearly
-        user_input = parameters.get("unit-currency")  # parameter name
 
-        if 'amount' in user_input:
-            monthly_amount = str(user_input.get("amount"))
-        elif 'number' in parameters:
-            monthly_amount = str(parameters.get('number'))
+        if 'property_code' in parameters:
+            property_code = parameters.get('property_code')
         else:
-            monthly_amount = '100'
+            property_code = 'ma199'
 
-        if period == "monthly":
-
-            plan = {'35': '1.5 GB Data, Unlimited Standard National Talk and Text',
-                    '50': '6 GB Data, Unlimited Standard National Talk and Text; Upto 300 International Minutes',
-                    '60': '9 GB Data, Unlimited Standard National Talk and Text; Upto 500 International Minutes'}
-
-            if monthly_amount in plan.keys():
-                speech = "For a monthly plan of $" + monthly_amount + " you get " + plan[monthly_amount]
-            else:
-                speech = 'Monthly plans are available only for $35, 50 and 60. (you have entered "' + monthly_amount + '")'
-
-        elif period == "yearly":
-
-            plan = {'30': '1.5 GB Data and Unlimited Standard National Talk and Text',
-                    '40': '6 GB Data, Unlimited Standard National Talk and Text and Upto 300 International Minutes',
-                    '50': '9 GB Data, Unlimited Standard National Talk and Text and Upto 500 International Minutes'}
-
-            if monthly_amount in plan.keys():
-                speech = "For a yearly plan of $" + monthly_amount + " per month you get " + plan[monthly_amount]
-            else:
-                speech = 'Yearly plans are available only for $30, 40 and 50. (you have entered "' + monthly_amount + '")'
-
-        else:
-            speech = 'No matching plan found for user-defined period: ' + period
+        r = requests.post("https://www.choicehotels.com/webapi/hotel/"+ property_code.lower(),
+                           data={"businessFunction": "view_hotel",
+                                 "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
+        d = json.loads(r.text)
+        descriptions = [a['description'] for a in d['hotel']['amenities']]
+        out_string = ' '.join(descriptions)
+        speech = "Following amenities are available in " + property_code + ": " + out_string
+        data = descriptions
 
     elif req.get("result").get("action") == "specific.answer":  # action name
 
