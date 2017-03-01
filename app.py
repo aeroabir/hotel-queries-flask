@@ -87,28 +87,28 @@ def makeWebhookResult(req):
             hotel_name = d['hotel']['name']
             if query == 'amenities':
                 descriptions = [a['description'] for a in d['hotel']['amenities']]
-                out_string = ' '.join(descriptions)
+                out_string = ','.join(descriptions)
                 speech = "Following amenities are available in " + hotel_name + ": " + out_string
 
             elif query == 'attractions':
                 descriptions = [a['name'] for a in d['hotel']['destinations']['attractions']]
-                out_string = ' '.join(descriptions)
-                speech = "There are " + len(descriptions) + " restaurants near " + hotel_name + ": " + out_string
+                out_string = ';'.join(descriptions)
+                speech = "There are " + str(len(descriptions)) + " restaurants near " + hotel_name + ": " + out_string
 
             elif query == 'airports':
                 descriptions = [a['name'] for a in d['hotel']['destinations']['airports']]
-                out_string = ' '.join(descriptions)
-                speech = "There are " + len(descriptions) + " airports near " + hotel_name + ": " + out_string
+                out_string = ';'.join(descriptions)
+                speech = "There are " + str(len(descriptions)) + " airports near " + hotel_name + ": " + out_string
 
             elif query == 'restaurants':
                 descriptions = [a['name'] for a in d['hotel']['destinations']['restaurants']]
-                out_string = ' '.join(descriptions)
-                speech = "There are " + len(descriptions) + " restaurants near " + hotel_name + ": " + out_string
+                out_string = ';'.join(descriptions)
+                speech = "There are " + str(len(descriptions)) + " restaurants near " + hotel_name + ": " + out_string
 
             elif query == 'address':
                 descriptions = d['hotel']['address']
-                out_string = ' '.join([descriptions[k] for k in ['line1', 'city', 'postalCode', 'subdivision', 'country']])
-                speech = 'The address of ' + hotel_name + 'is ' + out_string
+                out_string = ','.join([descriptions[k] for k in ['line1', 'city', 'postalCode', 'subdivision', 'country']])
+                speech = 'The address of ' + hotel_name + ' is: ' + out_string
 
             data = descriptions
         except:
