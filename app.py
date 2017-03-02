@@ -57,6 +57,17 @@ def makeWebhookResult(req):
         else:
             brand = None
 
+        if 'specific_requests' in parameters:
+            specific_request = parameters.get("specific_requests")
+        else:
+            specific_request = None
+
+        specific_key = None
+        if specific_request in ['pet', 'pets', 'dog', 'dogs']:
+            specific_key = 'Pet-friendly Hotel'
+        elif specific_request in ['free breakfast', 'breakfast', 'coffee']:
+            specific_key = 'Free Hot Breakfast'
+
         property_address = [{'city': 'houston', 'address': '2475 North Freeway,Houston,77009,TX,US', 'id': 'TXC78', 'name': 'Sleep Inn & Suites Near Downtown North'},
         {'city': 'houston', 'address': '3134 Old Spanish Trail,Houston,77054,TX,US', 'id': 'TX933', 'name': 'MainStay Suites Texas Medical Center/Reliant Park'},
         {'city': 'houston', 'address': '6712 Morningside Drive,Houston,77030,TX,US', 'id': 'TX448', 'name': 'Rodeway Inn & Suites Medical Center'},
@@ -2438,25 +2449,43 @@ def makeWebhookResult(req):
         {'city': 'buffalo', 'address': '7514 Lundys La.,Niagara Falls,L2H 1G8,ON,CA', 'id': 'CN167', 'name': "Comfort Inn Lundy's Lane"},
         {'city': 'buffalo', 'address': '551 South Transit Street,Lockport,14094,NY,US', 'id': 'NY098', 'name': 'Quality Inn'}]
 
+        properties = []
+        hotel_ids = []
         if city and brand:
-            properties = []
             for row in property_address:
                 if row['city'].lower() == city.lower():
                     if brand.lower() in row['name'].lower() or brand.lower() in row['address'].lower():
                         properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
+                        hotel_ids.append(row['id'].lower())
             out_string = ' and '.join(properties)
             speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
 
         elif city and address:
-            properties = []
             for row in property_address:
                 if row['city'].lower() == city.lower():
                     if address.lower() in row['name'].lower() or address.lower() in row['address'].lower():
                         properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
+                        hotel_ids.append(row['id'].lower())
             out_string = ' and '.join(properties)
             speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
+
+        if len(properties) == 1 and specific_key:
+            id = hotel_ids[0]
+            r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+id.lower(),
+                               data={"businessFunction": "view_hotel",
+                                     "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
+            d2 = json.loads(r2.text)
+            descriptions = [a['description'] for a in d2['hotel']['amenities']]
+
+            if specific_key in descriptions:
+                if specific_key == 'Pet-friendly Hotel':
+                    speech = properties[0] + ' allows pets'
+                elif specific_key == 'Free Hot Breakfast':
+                    speech = properties[0] + ' has free breakfast'
+            else:
+                speech = properties[0] + " does not have the facility for " + specific_request
 
     # fetch property details by property code
     elif req.get("result").get("action") == "get.property.details":  # action name
@@ -2583,7 +2612,7 @@ def makeWebhookResult(req):
                     if specific_key in descriptions:
                         selected_hotels.append(hotel_id_dict[id])
 
-                hotel_names_string = '\t'.join(selected_hotels)
+                hotel_names_string = ' and '.join(selected_hotels)
                 speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
                 # speech = out_str
                 data = selected_hotels
