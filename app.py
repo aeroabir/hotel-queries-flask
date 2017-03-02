@@ -2458,6 +2458,7 @@ def makeWebhookResult(req):
             speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
 
+    # fetch property details by property code
     elif req.get("result").get("action") == "get.property.details":  # action name
         result = req.get("result")
         parameters = result.get("parameters")
