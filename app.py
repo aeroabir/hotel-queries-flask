@@ -2491,9 +2491,9 @@ def makeWebhookResult(req):
             else:
                 speech = properties[0] + " does not have the facility for " + specific_request
 
-        if not specific_key:
-            # context_out = {"contextOut": [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]}
-            context_out = all_data
+        # if not specific_key:
+        #     # context_out = {"contextOut": [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]}
+        #     context_out = all_data
 
     # fetch property details by property code
     elif req.get("result").get("action") == "get.property.details":  # action name
@@ -2694,7 +2694,7 @@ def makeWebhookResult(req):
         "displayText": speech,
         "data": data,
         "contextOut": context_out,
-        "source": "apiai-onlinestore-shipping"
+        "source": "apiai-choicehotel-queries"
     }
 
 
