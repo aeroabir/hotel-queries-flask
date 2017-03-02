@@ -2562,77 +2562,125 @@ def makeWebhookResult(req):
     elif req.get("result").get("action") == "specific.answer":  # action name
 
         result = req.get("result")
-        # parameters = result.get("parameters")
-        parameters = result.get("contexts")[0].get("parameters")  # data coming from previous context, not from parameters
+        contexts = result.get("contexts")
 
-        if 'geo-city' in parameters:
-            place = parameters.get("geo-city")
-        else:
-            place = 'London'
+        # This context is coming from intent = "specific_question_single_property"
+        if contexts[0]['name'] == 'hotel-codes':
 
-        if 'start-date' in parameters:
-            start_date = parameters.get("start-date")
-        else:
-            start_date = time.strftime('%Y-%m-%d')  # today's date
+            parameters = contexts[0].get("parameters")
 
-        if 'end-date' in parameters:
-            end_date = parameters.get("end-date")
-        else:
-            today = datetime.datetime.today()
-            tomorrow = today + datetime.timedelta(1)
-            end_date = datetime.datetime.strftime(tomorrow,'%Y-%m-%d')  # tomorrow's date
-
-        if 'cardinal' in parameters:
-            num_adults = int(parameters.get('cardinal'))
-        else:
-            num_adults = 1
-
-        if 'specific_requests' in parameters:
-            specific_request = parameters.get("specific_requests")
-        else:
-            specific_request = 'NA'
-
-        specific_key = 'NA'
-        if specific_request in ['pet', 'pets']:
-            specific_key = 'Pet-friendly Hotel'
-        elif specific_request in ['free breakfast', 'breakfast']:
-            specific_key = 'Free Hot Breakfast'
-
-        try:
-            r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place,
-                "adults": num_adults, "checkInDate": start_date, "checkOutDate": end_date,
-                "ratePlans": "RACK%2CPREPD%2CPROMO%2CSCPM", "rateType":"LOW_ALL"})
-            if r.status_code == 200:
-                d = json.loads(r.text)
-                hotels = d['hotels']
-                hotel_id_dict = {}
-                for h in hotels:
-                    hotel_id_dict[h['id']] = h['name']
-                # hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
-                hotel_ids = [h['id'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
-                selected_hotels = []
-                # out_str = ''
-                for id in hotel_ids:
-                    r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+id.lower(),
-                                       data={"businessFunction": "view_hotel",
-                                             "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
-                    d2 = json.loads(r2.text)
-                    descriptions = [a['description'] for a in d2['hotel']['amenities']]
-                    # out_str += id + '--'.join(descriptions)
-                    if specific_key in descriptions:
-                        selected_hotels.append(hotel_id_dict[id])
-
-                hotel_names_string = ' and '.join(selected_hotels)
-                speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
-                # speech = out_str
-                data = selected_hotels
+            if 'property_data' in parameters:
+                property_data = parameters.get("property_data")
+                if len(property_data) > 0:
+                    property_dict = property_data[0]
+                else:
+                    property_dict = None
             else:
-                speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + r.reason
+                property_dict = None
+
+            if 'specific_requests' in parameters:
+                specific_request = parameters.get("specific_requests")
+            else:
+                specific_request = None
+
+            specific_key = None
+            if specific_request in ['pet', 'pets']:
+                specific_key = 'Pet-friendly Hotel'
+            elif specific_request in ['free breakfast', 'breakfast']:
+                specific_key = 'Free Hot Breakfast'
+
+            if property_dict and specific_key:
+                r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+property_dict['id'].lower(),
+                                   data={"businessFunction": "view_hotel",
+                                         "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
+                d2 = json.loads(r2.text)
+                descriptions = [a['description'] for a in d2['hotel']['amenities']]
+                if specific_key in descriptions:
+                    if specific_key == 'Pet-friendly Hotel':
+                        speech = property_dict["name"] + ' allows pets'
+                    elif specific_key == 'Free Hot Breakfast':
+                        speech = property_dict["name"] + ' has free breakfast'
+                else:
+                    speech = property_dict["name"] + " does not have the facility for " + specific_request
                 data = {}
 
-        except:
-            speech = 'Not working for ' + place
-            data = {}
+            else:
+                speech = "Cannot fetch any data ... (python code)"
+                data = {}
+
+        # This context is coming from intent = "specific_question_multiple_properties"
+        elif contexts[0]['name'] == 'hotel_search_details':
+
+            parameters = result.get("contexts")[0].get("parameters")  # data coming from previous context, not from parameters
+
+            if 'geo-city' in parameters:
+                place = parameters.get("geo-city")
+            else:
+                place = 'London'
+
+            if 'start-date' in parameters:
+                start_date = parameters.get("start-date")
+            else:
+                start_date = time.strftime('%Y-%m-%d')  # today's date
+
+            if 'end-date' in parameters:
+                end_date = parameters.get("end-date")
+            else:
+                today = datetime.datetime.today()
+                tomorrow = today + datetime.timedelta(1)
+                end_date = datetime.datetime.strftime(tomorrow,'%Y-%m-%d')  # tomorrow's date
+
+            if 'cardinal' in parameters:
+                num_adults = int(parameters.get('cardinal'))
+            else:
+                num_adults = 1
+
+            if 'specific_requests' in parameters:
+                specific_request = parameters.get("specific_requests")
+            else:
+                specific_request = 'NA'
+
+            specific_key = 'NA'
+            if specific_request in ['pet', 'pets']:
+                specific_key = 'Pet-friendly Hotel'
+            elif specific_request in ['free breakfast', 'breakfast']:
+                specific_key = 'Free Hot Breakfast'
+
+            try:
+                r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place,
+                    "adults": num_adults, "checkInDate": start_date, "checkOutDate": end_date,
+                    "ratePlans": "RACK%2CPREPD%2CPROMO%2CSCPM", "rateType":"LOW_ALL"})
+                if r.status_code == 200:
+                    d = json.loads(r.text)
+                    hotels = d['hotels']
+                    hotel_id_dict = {}
+                    for h in hotels:
+                        hotel_id_dict[h['id']] = h['name']
+                    # hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
+                    hotel_ids = [h['id'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
+                    selected_hotels = []
+                    # out_str = ''
+                    for id in hotel_ids:
+                        r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+id.lower(),
+                                           data={"businessFunction": "view_hotel",
+                                                 "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
+                        d2 = json.loads(r2.text)
+                        descriptions = [a['description'] for a in d2['hotel']['amenities']]
+                        # out_str += id + '--'.join(descriptions)
+                        if specific_key in descriptions:
+                            selected_hotels.append(hotel_id_dict[id])
+
+                    hotel_names_string = ' and '.join(selected_hotels)
+                    speech = "Found " + str(len(selected_hotels)) + " hotel(s) for " + specific_request + ": " + hotel_names_string
+                    # speech = out_str
+                    data = selected_hotels
+                else:
+                    speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + r.reason
+                    data = {}
+
+            except:
+                speech = 'Not working for ' + place
+                data = {}
 
     elif req.get("result").get("action") == "show.hotels":  # action name
 
