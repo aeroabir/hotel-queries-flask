@@ -2438,12 +2438,15 @@ def makeWebhookResult(req):
         {'city': 'buffalo', 'address': '7514 Lundys La.,Niagara Falls,L2H 1G8,ON,CA', 'id': 'CN167', 'name': "Comfort Inn Lundy's Lane"},
         {'city': 'buffalo', 'address': '551 South Transit Street,Lockport,14094,NY,US', 'id': 'NY098', 'name': 'Quality Inn'}]
 
-
-        # if city and brand:
-        #     codes = get_hotel_code(city=city, user_input=brand)
-        #     out_string = ','.join(codes)
-        #     speech = "Found " + str(len(codes)) + "properties: " + out_string
-        #     data = codes
+        if city and brand:
+            codes = []
+            for row in property_address:
+                if row['city'].lower() == city.lower():
+                    if brand.lower() in row['name'].lower() or brand.lower() in row['address'].lower():
+                        codes.append(row['id'].lower())
+            out_string = ','.join(codes)
+            speech = "Found " + str(len(codes)) + "propertie(s): " + out_string
+            data = codes
 
     elif req.get("result").get("action") == "get.property.details":  # action name
         result = req.get("result")
