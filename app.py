@@ -2583,7 +2583,6 @@ def makeWebhookResult(req):
             else:
                 specific_request = None
 
-            specific_key = None
             if specific_request in ['pet', 'pets']:
                 specific_key = 'Pet-friendly Hotel'
                 include_list = ["amenities", "amenity_groups"]
@@ -2596,22 +2595,54 @@ def makeWebhookResult(req):
             elif specific_request in ['attractions', 'airports', 'restaurants']:
                 specific_key = specific_request
                 include_list = ['destinations']
+            else:
+                specific_key = specific_request
+                include_list = []
 
             if property_dict and specific_key:
-                r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+property_dict['id'].lower(),
+                r = requests.post("https://www.choicehotels.com/webapi/hotel/"+property_dict['id'].lower(),
                                    data={"businessFunction": "view_hotel",
                                          "include": include_list, "preferredLocaleCode": "en-us"})
-                d2 = json.loads(r2.text)
-                descriptions = [a['description'] for a in d2['hotel']['amenities']]
-                if specific_key in descriptions:
-                    if specific_key == 'Pet-friendly Hotel':
-                        speech = property_dict["name"] + ' allows pets'
-                    elif specific_key == 'Free Hot Breakfast':
-                        speech = property_dict["name"] + ' has free breakfast'
-                else:
-                    speech = property_dict["name"] + " does not have the facility for " + specific_request
-                data = {}
+                d = json.loads(r.text)
+                if specific_key in ['Pet-friendly Hotel', 'Free Hot Breakfast']:
+                    descriptions = [a['description'] for a in d['hotel']['amenities']]
+                    if specific_key in descriptions:
+                        if specific_key == 'Pet-friendly Hotel':
+                            speech = property_dict["name"] + ' allows pets'
+                        elif specific_key == 'Free Hot Breakfast':
+                            speech = property_dict["name"] + ' has free breakfast'
+                    else:
+                        speech = property_dict["name"] + " does not have the facility for " + specific_request
 
+                elif specific_key == 'amenities':
+                    descriptions = [a['description'] for a in d['hotel']['amenities']]
+                    out_string = ','.join(descriptions)
+                    speech = "Following amenities are available in " + property_dict["name"] + ": " + out_string
+
+                elif specific_key == 'attractions':
+                    descriptions = [a['name'] for a in d['hotel']['destinations']['attractions']]
+                    out_string = ';'.join(descriptions)
+                    speech = "There are " + str(len(descriptions)) + " places to visit near " + property_dict["name"] + ": " + out_string
+
+                elif specific_key == 'airports':
+                    descriptions = [a['name'] for a in d['hotel']['destinations']['airports']]
+                    out_string = ';'.join(descriptions)
+                    speech = "There are " + str(len(descriptions)) + " airports near " + property_dict["name"] + ": " + out_string
+
+                elif specific_key == 'restaurants':
+                    descriptions = [a['name'] for a in d['hotel']['destinations']['restaurants']]
+                    out_string = ';'.join(descriptions)
+                    speech = "There are " + str(len(descriptions)) + " restaurants near " + property_dict["name"] + ": " + out_string
+
+                elif specific_key == 'address':
+                    descriptions = d['hotel']['address']
+                    out_string = ','.join([descriptions[k] for k in ['line1', 'city', 'postalCode', 'subdivision', 'country']])
+                    speech = 'The address of ' + property_dict["name"] + ' is: ' + out_string
+
+                elif specific_key in ['phone', 'phone number', 'contact']:
+                    descriptions = d['hotel']['phone']
+                    speech = 'The contact number of ' + property_dict["name"] + ' is: ' + descriptions
+                data = descriptions
             else:
                 speech = "Cannot fetch any data ... (python code)"
                 data = {}
