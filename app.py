@@ -2445,7 +2445,16 @@ def makeWebhookResult(req):
                     if brand.lower() in row['name'].lower() or brand.lower() in row['address'].lower():
                         properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
             out_string = ' and '.join(properties)
-            speech = "Found " + str(len(properties)) + "propertie(s): " + out_string
+            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
+            data = properties
+
+        elif city and address:
+            properties = []
+            for row in property_address:
+                if row['city'].lower() == city.lower() and address.lower() in row['address'].lower():
+                    properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
+            out_string = ' and '.join(properties)
+            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
 
     elif req.get("result").get("action") == "get.property.details":  # action name
