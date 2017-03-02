@@ -2439,11 +2439,11 @@ def makeWebhookResult(req):
         {'city': 'buffalo', 'address': '551 South Transit Street,Lockport,14094,NY,US', 'id': 'NY098', 'name': 'Quality Inn'}]
 
         if city and brand:
-            codes = []
+            properties = []
             for row in property_address:
                 if row['city'].lower() == city.lower():
                     if brand.lower() in row['name'].lower() or brand.lower() in row['address'].lower():
-                        codes.append(row['id'].lower())
+                        properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
             out_string = ','.join(codes)
             speech = "Found " + str(len(codes)) + "propertie(s): " + out_string
             data = codes
