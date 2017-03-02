@@ -35,6 +35,7 @@ def webhook():
 
 def makeWebhookResult(req):
 
+    context_out = []
     if req.get("result").get("action") == 'get.hotel.code':
 
         result = req.get("result")
@@ -2451,12 +2452,14 @@ def makeWebhookResult(req):
 
         properties = []
         hotel_ids = []
+        all_data = []
         if city and brand:
             for row in property_address:
                 if row['city'].lower() == city.lower():
                     if brand.lower() in row['name'].lower() or brand.lower() in row['address'].lower():
                         properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
                         hotel_ids.append(row['id'].lower())
+                        all_data.append(row)
             out_string = ' and '.join(properties)
             speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
@@ -2467,6 +2470,7 @@ def makeWebhookResult(req):
                     if address.lower() in row['name'].lower() or address.lower() in row['address'].lower():
                         properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
                         hotel_ids.append(row['id'].lower())
+                        all_data.append(row)
             out_string = ' and '.join(properties)
             speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
@@ -2486,6 +2490,10 @@ def makeWebhookResult(req):
                     speech = properties[0] + ' has free breakfast'
             else:
                 speech = properties[0] + " does not have the facility for " + specific_request
+
+        if not specific_key:
+            # context_out = {"contextOut": [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]}
+            context_out = all_data
 
     # fetch property details by property code
     elif req.get("result").get("action") == "get.property.details":  # action name
@@ -2553,7 +2561,7 @@ def makeWebhookResult(req):
 
         result = req.get("result")
         # parameters = result.get("parameters")
-        parameters = result.get("contexts")[0].get("parameters")  # data coming from previous context
+        parameters = result.get("contexts")[0].get("parameters")  # data coming from previous context, not from parameters
 
         if 'geo-city' in parameters:
             place = parameters.get("geo-city")
@@ -2685,7 +2693,7 @@ def makeWebhookResult(req):
         "speech": speech,
         "displayText": speech,
         "data": data,
-        # "contextOut": [],
+        "contextOut": context_out,
         "source": "apiai-onlinestore-shipping"
     }
 
