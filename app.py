@@ -2444,7 +2444,7 @@ def makeWebhookResult(req):
                 if row['city'].lower() == city.lower():
                     if brand.lower() in row['name'].lower() or brand.lower() in row['address'].lower():
                         properties.append(row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city'])
-            out_string = ','.join(codes)
+            out_string = ' and '.join(properties)
             speech = "Found " + str(len(codes)) + "propertie(s): " + out_string
             data = codes
 
