@@ -2492,6 +2492,7 @@ def makeWebhookResult(req):
                 speech = properties[0] + " does not have the facility for " + specific_request
 
         # context_out = {"contextOut": all_data}
+        context_out = [{"name": "hotel-codes", "lifespan": 5, "parameters": {"property_data": all_data}}]
         # if not specific_key:
         #     # context_out = {"contextOut": [{"name":"weather", "lifespan":2, "parameters":{"city":"Rome"}}]}
         #     context_out = all_data
