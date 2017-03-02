@@ -2586,13 +2586,21 @@ def makeWebhookResult(req):
             specific_key = None
             if specific_request in ['pet', 'pets']:
                 specific_key = 'Pet-friendly Hotel'
+                include_list = ["amenities", "amenity_groups"]
             elif specific_request in ['free breakfast', 'breakfast']:
                 specific_key = 'Free Hot Breakfast'
+                include_list = ["amenities", "amenity_groups"]
+            elif specific_request in ['amenities']:
+                specific_key = specific_request
+                include_list = ["amenities", "amenity_groups"]
+            elif specific_request in ['attractions', 'airports', 'restaurants']:
+                specific_key = specific_request
+                include_list = ['destinations']
 
             if property_dict and specific_key:
                 r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+property_dict['id'].lower(),
                                    data={"businessFunction": "view_hotel",
-                                         "include": ["amenities", "amenity_groups"], "preferredLocaleCode": "en-us"})
+                                         "include": include_list, "preferredLocaleCode": "en-us"})
                 d2 = json.loads(r2.text)
                 descriptions = [a['description'] for a in d2['hotel']['amenities']]
                 if specific_key in descriptions:
