@@ -55,20 +55,30 @@ def makeWebhookResult(req):
         speech = "Could not locate any property, please refine the search ... "
         data = {}
 
+        user_input = None
         if 'address' in parameters:
             address = parameters.get('address')
+            user_input += address + " "
         else:
             address = None
 
         if 'geo-city' in parameters:
             city = parameters.get('geo-city')
+            user_input += city + " "
         else:
             city = None
 
         if 'hotel_brands' in parameters:
             brand = parameters.get('hotel_brands')
+            user_input += brand + " "
         else:
             brand = None
+
+        if 'geo-state-us' in parameters:
+            us_state = parameters.get('geo-state-us')
+            user_input += us_state
+        else:
+            us_state = None
 
         if 'specific_requests' in parameters:
             specific_request = parameters.get("specific_requests")
