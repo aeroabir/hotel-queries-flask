@@ -2734,6 +2734,7 @@ def makeWebhookResult(req):
                         hotel_id_dict[h['id']] = h['name']
                     # hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
                     hotel_ids = [h['id'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
+                    hotel_ids = hotel_ids[:10]  # limit the search to 10 properties for time-out error
                     selected_hotels = []
                     # out_str = ''
                     for id in hotel_ids:
