@@ -2505,7 +2505,7 @@ def makeWebhookResult(req):
                 hotel_ids.append(possible_id)
                 properties.append(possible_description)
                 all_data.append(possible_description)
-                speech = "Top matching property - " + pname
+                speech = "Top matching property - " + possible_description
                 data = [possible_description]
             else:
                 speech = "Trying to get the top matching property ..."
