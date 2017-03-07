@@ -2489,13 +2489,15 @@ def makeWebhookResult(req):
 
         elif address:
             possible_id = None
-            property_description = None
+            possible_description = None
             max_score = 0
             for row in property_address:
                 # max_score = get_matching_scores(user_input, row['name'] + ' ' + row['address'] + ' ' + row['city'])
-                if SequenceMatcher(None, user_input, row['name'] + ' ' + row['address'] + ' ' + row['city']).ratio() > max_score:
+                score = SequenceMatcher(None, address, row['name'] + ' ' + row['address'] + ' ' + row['city']).ratio()
+                if score > max_score:
                     possible_id = row['id']
                     possible_description = row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city']
+                    max_score = score
 
             # sorted_properties = sorted(possible_properties.items(), key=operator.itemgetter(1))
             # take the most similar property
