@@ -2488,22 +2488,23 @@ def makeWebhookResult(req):
             data = properties
 
         elif address:
-            possible_properties = {}
-            property_descriptions = {}
-            for row in property_address:
-                # max_score = get_matching_scores(user_input, row['name'] + ' ' + row['address'] + ' ' + row['city'])
-                max_score = SequenceMatcher(None, user_input, row['name'] + ' ' + row['address'] + ' ' + row['city']).ratio()
-                possible_properties[row['id']] = max_score
-                property_descriptions[row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city']] = max_score
+            # possible_properties = {}
+            # property_descriptions = {}
+            # for row in property_address:
+            #     # max_score = get_matching_scores(user_input, row['name'] + ' ' + row['address'] + ' ' + row['city'])
+            #     max_score = SequenceMatcher(None, user_input, row['name'] + ' ' + row['address'] + ' ' + row['city']).ratio()
+            #     possible_properties[row['id']] = max_score
+            #     property_descriptions[row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city']] = max_score
 
             # sorted_properties = sorted(possible_properties.items(), key=operator.itemgetter(1))
             # take the most similar property
-            hotel_ids.append(max(possible_properties.iteritems(), key=operator.itemgetter(1))[0])
-            pname = max(property_descriptions.iteritems(), key=operator.itemgetter(1))[0]
-            properties.append(pname)
-            all_data.append(pname)
-            speech = "Found " + pname
-            data = pname
+            # hotel_ids.append(max(possible_properties.iteritems(), key=operator.itemgetter(1))[0])
+            # pname = max(property_descriptions.iteritems(), key=operator.itemgetter(1))[0]
+            # properties.append(pname)
+            # all_data.append(pname)
+            # speech = "Top matching property - " + pname
+            # data = pname
+            speech = "Trying to get the top matching property ..."
 
         if len(properties) == 1 and specific_key:
             id = hotel_ids[0]
