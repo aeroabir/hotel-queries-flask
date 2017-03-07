@@ -2482,7 +2482,7 @@ def makeWebhookResult(req):
                         hotel_ids.append(row['id'].lower())
                         all_data.append(row)
             out_string = ' and '.join(properties)
-            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string + user_input
+            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
 
         elif city and address:
@@ -2493,8 +2493,31 @@ def makeWebhookResult(req):
                         hotel_ids.append(row['id'].lower())
                         all_data.append(row)
             out_string = ' and '.join(properties)
-            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string + user_input
+            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
+
+            # Duplicate from the below part (address) - need to merge
+            if len(properties) == 0:
+                possible_id = None
+                possible_description = None
+                max_score = 0
+                specific_row = None
+                for row in property_address:
+                    score = SequenceMatcher(None, user_input, row['name'] + ' ' + row['address'] + ' ' + row['city']).ratio()
+                    if score > max_score:
+                        possible_id = row['id']
+                        possible_description = row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city']
+                        specific_row = row
+                        max_score = score
+
+                if possible_id:
+                    hotel_ids.append(possible_id)
+                    properties.append(possible_description)
+                    all_data.append(specific_row)
+                    speech = "Top matching property is: " + possible_description
+                    data = properties
+                else:
+                    speech = "Trying to get the top matching property ..."
 
         elif address:
             possible_id = None
