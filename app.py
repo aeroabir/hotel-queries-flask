@@ -2491,12 +2491,14 @@ def makeWebhookResult(req):
             possible_id = None
             possible_description = None
             max_score = 0
+            specific_row = None
             for row in property_address:
                 # max_score = get_matching_scores(user_input, row['name'] + ' ' + row['address'] + ' ' + row['city'])
                 score = SequenceMatcher(None, address, row['name'] + ' ' + row['address'] + ' ' + row['city']).ratio()
                 if score > max_score:
                     possible_id = row['id']
                     possible_description = row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city']
+                    specific_row = row
                     max_score = score
 
             # sorted_properties = sorted(possible_properties.items(), key=operator.itemgetter(1))
@@ -2504,9 +2506,9 @@ def makeWebhookResult(req):
             if possible_id:
                 hotel_ids.append(possible_id)
                 properties.append(possible_description)
-                all_data.append(possible_description)
-                speech = "Top matching property - " + possible_description
-                data = [possible_description]
+                all_data.append(specific_row)
+                speech = "Top matching property is: " + possible_description
+                data = properties
             else:
                 speech = "Trying to get the top matching property ..."
 
