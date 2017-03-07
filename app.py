@@ -1,16 +1,20 @@
 #!/usr/bin/env python
 
-import urllib
 import csv
+import difflib
 import datetime
+from fuzzywuzzy import fuzz
+from fuzzywuzzy import process
+from flask import Flask
+from flask import request
+from flask import make_response
 import json
+import operator
 import os
 import random
 import requests
 import time
-from flask import Flask
-from flask import request
-from flask import make_response
+import urllib
 # from flask_sqlalchemy import SQLAlchemy
 
 # Flask app should start in global layout
@@ -34,6 +38,13 @@ def webhook():
 
 
 def makeWebhookResult(req):
+
+    # get string matching scores
+    def get_matching_scores(t1, t2):
+        r1 = fuzz.ratio(t1, t2)
+        r2 = fuzz.partial_ratio(t1, t2)
+        r3 = fuzz.token_set_ratio(t1, t2)
+        return max(r1, r2, r3)
 
     context_out = []
     if req.get("result").get("action") == 'get.hotel.code':
@@ -2475,6 +2486,23 @@ def makeWebhookResult(req):
             speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
             data = properties
 
+        elif address:
+            possible_properties = {}
+            property_descriptions = {}
+            for row in property_address:
+                max_score = get_matching_scores(user_input, row['name'] + ' ' + row['address'] + ' ' + row['city'])
+                possible_properties[row['id']] = max_score
+                property_descriptions[row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city']] = max_score
+
+            # sorted_properties = sorted(possible_properties.items(), key=operator.itemgetter(1))
+            # take the most similar property
+            hotel_ids.append(max(possible_properties.iteritems(), key=operator.itemgetter(1))[0])
+            pname = max(property_descriptions.iteritems(), key=operator.itemgetter(1))[0]
+            properties.append(pname)
+            all_data.append(pname)
+            speech = "Found " + pname
+            data = pname
+
         if len(properties) == 1 and specific_key:
             id = hotel_ids[0]
             r2 = requests.post("https://www.choicehotels.com/webapi/hotel/"+id.lower(),
@@ -2730,6 +2758,10 @@ def makeWebhookResult(req):
             place = parameters.get("geo-city")
         else:
             place = 'London'
+
+        if 'geo-state-us' in parameters:
+            state = parameters.get("geo-state-us")
+            place += ", " + state
 
         if 'start-date' in parameters:
             start_date = parameters.get("start-date")
