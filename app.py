@@ -55,10 +55,9 @@ def makeWebhookResult(req):
         speech = "Could not locate any property, please refine the search ... "
         data = {}
 
-        user_input = None
         if 'address' in parameters:
             address = parameters.get('address')
-            user_input += address + " "
+            user_input = address + " "
         else:
             address = None
 
