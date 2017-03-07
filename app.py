@@ -2482,7 +2482,7 @@ def makeWebhookResult(req):
                         hotel_ids.append(row['id'].lower())
                         all_data.append(row)
             out_string = ' and '.join(properties)
-            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
+            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string + user_input
             data = properties
 
         elif city and address:
@@ -2493,7 +2493,7 @@ def makeWebhookResult(req):
                         hotel_ids.append(row['id'].lower())
                         all_data.append(row)
             out_string = ' and '.join(properties)
-            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string
+            speech = "Found " + str(len(properties)) + " propertie(s): " + out_string + user_input
             data = properties
 
         elif address:
