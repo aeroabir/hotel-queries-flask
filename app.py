@@ -3,8 +3,9 @@
 import csv
 import difflib
 import datetime
-from fuzzywuzzy import fuzz
-from fuzzywuzzy import process
+from difflib import SequenceMatcher
+# from fuzzywuzzy import fuzz
+# from fuzzywuzzy import process
 from flask import Flask
 from flask import request
 from flask import make_response
@@ -40,11 +41,11 @@ def webhook():
 def makeWebhookResult(req):
 
     # get string matching scores
-    def get_matching_scores(t1, t2):
-        r1 = fuzz.ratio(t1, t2)
-        r2 = fuzz.partial_ratio(t1, t2)
-        r3 = fuzz.token_set_ratio(t1, t2)
-        return max(r1, r2, r3)
+    # def get_matching_scores(t1, t2):
+    #     r1 = fuzz.ratio(t1, t2)
+    #     r2 = fuzz.partial_ratio(t1, t2)
+    #     r3 = fuzz.token_set_ratio(t1, t2)
+    #     return max(r1, r2, r3)
 
     context_out = []
     if req.get("result").get("action") == 'get.hotel.code':
@@ -2490,7 +2491,8 @@ def makeWebhookResult(req):
             possible_properties = {}
             property_descriptions = {}
             for row in property_address:
-                max_score = get_matching_scores(user_input, row['name'] + ' ' + row['address'] + ' ' + row['city'])
+                # max_score = get_matching_scores(user_input, row['name'] + ' ' + row['address'] + ' ' + row['city'])
+                max_score = SequenceMatcher(None, user_input, row['name'] + ' ' + row['address'] + ' ' + row['city']).ratio()
                 possible_properties[row['id']] = max_score
                 property_descriptions[row['id'].lower() + ": " + row['name'] + ", " + row['address'] + ", " + row['city']] = max_score
 
