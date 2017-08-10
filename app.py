@@ -2596,46 +2596,46 @@ def makeWebhookResult(req):
         else:
             include_list = []
 
-        try:
-            r = requests.post("https://www.choicehotels.com/webapi/hotel/" + property_code.lower(),
-                               data={"businessFunction": "view_hotel",
-                                     "include": include_list, "preferredLocaleCode": "en-us"})
-            d = json.loads(r.text)
-            print(d['status'])
-            hotel_name = d['hotel']['name']
-            if query == 'amenities':
-                descriptions = [a['description'] for a in d['hotel']['amenities']]
-                out_string = ','.join(descriptions)
-                speech = "Following amenities are available in " + hotel_name + ": " + out_string
+        # try:
+        r = requests.post("https://www.choicehotels.com/webapi/hotel/" + property_code.lower(),
+                           data={"businessFunction": "view_hotel",
+                                 "include": include_list, "preferredLocaleCode": "en-us"})
+        d = json.loads(r.text)
+        print(d['status'])
+        hotel_name = d['hotel']['name']
+        if query == 'amenities':
+            descriptions = [a['description'] for a in d['hotel']['amenities']]
+            out_string = ','.join(descriptions)
+            speech = "Following amenities are available in " + hotel_name + ": " + out_string
 
-            elif query == 'attractions':
-                descriptions = [a['name'] for a in d['hotel']['destinations']['attractions']]
-                out_string = ';'.join(descriptions)
-                speech = "There are " + str(len(descriptions)) + " places to visit near " + hotel_name + ": " + out_string
+        elif query == 'attractions':
+            descriptions = [a['name'] for a in d['hotel']['destinations']['attractions']]
+            out_string = ';'.join(descriptions)
+            speech = "There are " + str(len(descriptions)) + " places to visit near " + hotel_name + ": " + out_string
 
-            elif query == 'airports':
-                descriptions = [a['name'] for a in d['hotel']['destinations']['airports']]
-                out_string = ';'.join(descriptions)
-                speech = "There are " + str(len(descriptions)) + " airports near " + hotel_name + ": " + out_string
+        elif query == 'airports':
+            descriptions = [a['name'] for a in d['hotel']['destinations']['airports']]
+            out_string = ';'.join(descriptions)
+            speech = "There are " + str(len(descriptions)) + " airports near " + hotel_name + ": " + out_string
 
-            elif query == 'restaurants':
-                descriptions = [a['name'] for a in d['hotel']['destinations']['restaurants']]
-                out_string = ';'.join(descriptions)
-                speech = "There are " + str(len(descriptions)) + " restaurants near " + hotel_name + ": " + out_string
+        elif query == 'restaurants':
+            descriptions = [a['name'] for a in d['hotel']['destinations']['restaurants']]
+            out_string = ';'.join(descriptions)
+            speech = "There are " + str(len(descriptions)) + " restaurants near " + hotel_name + ": " + out_string
 
-            elif query == 'address':
-                descriptions = d['hotel']['address']
-                out_string = ','.join([descriptions[k] for k in ['line1', 'city', 'postalCode', 'subdivision', 'country']])
-                speech = 'The address of ' + hotel_name + ' is: ' + out_string
+        elif query == 'address':
+            descriptions = d['hotel']['address']
+            out_string = ','.join([descriptions[k] for k in ['line1', 'city', 'postalCode', 'subdivision', 'country']])
+            speech = 'The address of ' + hotel_name + ' is: ' + out_string
 
-            elif query in ['phone', 'phone number', 'contact']:
-                descriptions = d['hotel']['phone']
-                speech = 'The contact number of ' + hotel_name + ' is: ' + descriptions
+        elif query in ['phone', 'phone number', 'contact']:
+            descriptions = d['hotel']['phone']
+            speech = 'The contact number of ' + hotel_name + ' is: ' + descriptions
 
-            data = descriptions
-        except:
-            speech = 'Cannot fetch any data for ' + property_code
-            data = {}
+        data = descriptions
+        # except:
+        #     speech = 'Cannot fetch any data for ' + property_code
+        #     data = {}
 
     elif req.get("result").get("action") == "specific.answer":  # action name
 
