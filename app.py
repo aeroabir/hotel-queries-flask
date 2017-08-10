@@ -26,14 +26,23 @@ app = Flask(__name__)
 def webhook():
     req = request.get_json(silent=True, force=True)
 
-    print("Request:")
-    print(json.dumps(req, indent=4))
+    res1 = {
+        "speech": "aaa",
+        "displayText": "aaa",
+        "data": "aaa",
+        "contextOut": "aaa",
+        "source": "apiai-choicehotel-queries"
+    }
+        # print("Request:")
+    # print(json.dumps(req, indent=4))
 
-    res = makeWebhookResult(req)
+    # res = makeWebhookResult(req)
+    # res = json.dumps(res, indent=4)
+    # print(res)
+    # r = make_response(res)
 
-    res = json.dumps(res, indent=4)
-    print(res)
-    r = make_response(res)
+    r = make_response(res1)
+
     r.headers['Content-Type'] = 'application/json'
     return r
 
