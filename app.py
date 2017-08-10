@@ -2597,10 +2597,11 @@ def makeWebhookResult(req):
             include_list = []
 
         try:
-            r = requests.post("https://www.choicehotels.com/webapi/hotel/"+ property_code.lower(),
+            r = requests.post("https://www.choicehotels.com/webapi/hotel/" + property_code.lower(),
                                data={"businessFunction": "view_hotel",
                                      "include": include_list, "preferredLocaleCode": "en-us"})
             d = json.loads(r.text)
+            print(d['status'])
             hotel_name = d['hotel']['name']
             if query == 'amenities':
                 descriptions = [a['description'] for a in d['hotel']['amenities']]
@@ -2845,7 +2846,7 @@ def makeWebhookResult(req):
                 speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
                 data = hotel_names
             else:
-                speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + r.reason
+                speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + ', ' + r.reason
                 data = {}
 
         except:
