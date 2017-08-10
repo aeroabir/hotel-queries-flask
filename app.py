@@ -38,7 +38,7 @@ def webhook():
     # print(json.dumps(req, indent=4))
 
     res = makeWebhookResult(req)
-    # res = json.dumps(res, indent=4)
+    res = json.dumps(res, indent=4)
     # print(res)
     r = make_response(res)
 
