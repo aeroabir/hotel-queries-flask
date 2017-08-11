@@ -3168,7 +3168,7 @@ def makeWebhookResult(req):
                             speech = 'None of these properties allows pets'
                         elif specific_key == 'Free Hot Breakfast':
                             speech = 'None of these properties provides free breakfast'
-
+                
             elif len(property_dict)==1 and specific_key:
                 # r = requests.post("https://www.choicehotels.com/webapi/hotel/"+property_dict['id'].lower(),
                 #                    data={"businessFunction": "view_hotel",
@@ -3355,7 +3355,14 @@ def makeWebhookResult(req):
         hotel_names_string = '\t'.join(hotel_names)
         speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
         data = hotel_names
+        all_data = []
+        for h in hotel_names:
+            pid, name = h.split(": ")
+            all_data.append({'id': pid, 'name': name})
 
+        modified_parameters = parameters
+        modified_parameters["property_data"] = all_data
+        context_out = [{"name": "available-hotel-codes", "lifespan": 5, "parameters": modified_parameters}]
         # except:
         #     speech = 'Not working for ' + place
         #     data = {}
