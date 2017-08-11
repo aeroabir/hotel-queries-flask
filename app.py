@@ -3114,10 +3114,11 @@ def makeWebhookResult(req):
 
             if 'property_data' in parameters:
                 property_data = parameters.get("property_data")
-                if len(property_data) > 0:
-                    property_dict = property_data[0]
-                else:
-                    property_dict = None
+                property_dict = property_data
+                # if len(property_data) > 0:
+                #     property_dict = property_data[0]
+                # else:
+                #     property_dict = None
             else:
                 property_dict = None
 
@@ -3142,7 +3143,29 @@ def makeWebhookResult(req):
                 specific_key = specific_request
                 include_list = []
 
-            if property_dict and specific_key:
+            if len(property_dict) > 1 and specific_key:
+
+                if specific_key in ['Pet-friendly Hotel', 'Free Hot Breakfast']:
+                    flag = False
+                    qualifying_properties = []
+                    for p in property_dict:
+                        d = property_details[p['id'].lower()]['property_details']
+                        descriptions = [a['description'] for a in d['hotel']['amenities']]
+                        if specific_key in descriptions:
+                            qualifying_properties.append(p['name'] + ', ' + p['address'])
+                    if len(qualifying_properties) > 0:
+                        all_qualifying_properties = ','.join(qualifying_properties)
+                        if specific_key == 'Pet-friendly Hotel':
+                            speech = all_qualifying_properties + 'will allow pets'
+                        elif specific_key == 'Free Hot Breakfast':
+                            speech = all_qualifying_properties + ' will provide free breakfast'
+                    else:
+                        if specific_key == 'Pet-friendly Hotel':
+                            speech = 'No property found that allows pets'
+                        elif specific_key == 'Free Hot Breakfast':
+                            speech = 'No matching property found that provides free breakfast'
+
+            elif len(property_dict)==1 and specific_key:
                 # r = requests.post("https://www.choicehotels.com/webapi/hotel/"+property_dict['id'].lower(),
                 #                    data={"businessFunction": "view_hotel",
                 #                          "include": include_list, "preferredLocaleCode": "en-us"})
