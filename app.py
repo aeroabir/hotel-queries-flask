@@ -3299,13 +3299,6 @@ def makeWebhookResult(req):
 
     elif req.get("result").get("action") == "show.hotels":  # action name
 
-        available_properties = {
-            'boston_1': [u'MA225: enVision Hotel Boston-Everett, an Ascend Hotel Collection Member', u'MA199: enVision Hotel Boston-Longwood, an Ascend Hotel Collection Member', u'MA109: Comfort Inn', u'MA051: Comfort Inn & Suites Logan International Airport', u'MA129: Rodeway Inn Logan International Airport', u'MA080: Econo Lodge', u'MA230: Quality Inn', u'MA110: Comfort Inn', u'MA193: Comfort Inn Randolph - Boston', u'MA147: Quality Inn & Suites', u'MA245: Rodeway Inn', u'MA047: Comfort Inn Rockland - Boston', u'MA139: Econo Lodge', u'MA074: Econo Lodge', u'MA012: Rodeway Inn', u'MA036: Comfort Inn'],
-            'boston_2': [u'MA225: enVision Hotel Boston-Everett, an Ascend Hotel Collection Member', u'MA199: enVision Hotel Boston-Longwood, an Ascend Hotel Collection Member', u'MA109: Comfort Inn', u'MA051: Comfort Inn & Suites Logan International Airport', u'MA129: Rodeway Inn Logan International Airport', u'MA080: Econo Lodge', u'MA230: Quality Inn', u'MA110: Comfort Inn', u'MA193: Comfort Inn Randolph - Boston', u'MA147: Quality Inn & Suites', u'MA245: Rodeway Inn', u'MA047: Comfort Inn Rockland - Boston', u'MA139: Econo Lodge', u'MA074: Econo Lodge', u'MA012: Rodeway Inn', u'MA036: Comfort Inn'],
-            'london_1': [u'GB113: Comfort Inn Victoria', u'GB209: Comfort Inn Westminster', u'GB125: Comfort Inn Buckingham Palace Road', u'GB049: Comfort Inn St Pancras - Kings Cross', u'GB157: Comfort Inn Edgware Road W2', u'GB182: Comfort Inn Hyde Park', u'GB645: Quality Hotel Hampstead', u'GB191: Clarion Collection Hotel Richmond Gate', u'GB193: Clarion Collection Harte and Garter Hotel and Spa'],
-            'london_2': [u'GB113: Comfort Inn Victoria', u'GB209: Comfort Inn Westminster', u'GB125: Comfort Inn Buckingham Palace Road', u'GB049: Comfort Inn St Pancras - Kings Cross', u'GB157: Comfort Inn Edgware Road W2', u'GB182: Comfort Inn Hyde Park', u'GB645: Quality Hotel Hampstead', u'GB191: Clarion Collection Hotel Richmond Gate', u'GB193: Clarion Collection Harte and Garter Hotel and Spa']
-        }
-
         result = req.get("result")
         parameters = result.get("parameters")
 
@@ -3335,7 +3328,7 @@ def makeWebhookResult(req):
         else:
             num_adults = 1
 
-        try:
+        # try:
             # r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place,
             #     "adults": num_adults, "checkInDate": start_date, "checkOutDate": end_date,
             #     "ratePlans": "RACK%2CPREPD%2CPROMO%2CSCPM", "rateType":"LOW_ALL"})
@@ -3350,14 +3343,21 @@ def makeWebhookResult(req):
             #     speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + ', ' + r.reason
             #     data = {}
 
-            hotel_names = available_properties[place.lower()+'_'+str(num_adults)]
-            hotel_names_string = '\t'.join(hotel_names)
-            speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
-            data = hotel_names
+        available_properties = {
+            'boston_1': ['MA225: enVision Hotel Boston-Everett, an Ascend Hotel Collection Member', 'MA199: enVision Hotel Boston-Longwood, an Ascend Hotel Collection Member', 'MA109: Comfort Inn', 'MA051: Comfort Inn & Suites Logan International Airport', 'MA129: Rodeway Inn Logan International Airport', 'MA080: Econo Lodge', 'MA230: Quality Inn', 'MA110: Comfort Inn', 'MA193: Comfort Inn Randolph - Boston', 'MA147: Quality Inn & Suites', 'MA245: Rodeway Inn', 'MA047: Comfort Inn Rockland - Boston', 'MA139: Econo Lodge', 'MA074: Econo Lodge', 'MA012: Rodeway Inn', 'MA036: Comfort Inn'],
+            'boston_2': ['MA225: enVision Hotel Boston-Everett, an Ascend Hotel Collection Member', 'MA199: enVision Hotel Boston-Longwood, an Ascend Hotel Collection Member', 'MA109: Comfort Inn', 'MA051: Comfort Inn & Suites Logan International Airport', 'MA129: Rodeway Inn Logan International Airport', 'MA080: Econo Lodge', 'MA230: Quality Inn', 'MA110: Comfort Inn', 'MA193: Comfort Inn Randolph - Boston', 'MA147: Quality Inn & Suites', 'MA245: Rodeway Inn', 'MA047: Comfort Inn Rockland - Boston', 'MA139: Econo Lodge', 'MA074: Econo Lodge', 'MA012: Rodeway Inn', 'MA036: Comfort Inn'],
+            'london_1': ['GB113: Comfort Inn Victoria', 'GB209: Comfort Inn Westminster', 'GB125: Comfort Inn Buckingham Palace Road', 'GB049: Comfort Inn St Pancras - Kings Cross', 'GB157: Comfort Inn Edgware Road W2', 'GB182: Comfort Inn Hyde Park', 'GB645: Quality Hotel Hampstead', 'GB191: Clarion Collection Hotel Richmond Gate', 'GB193: Clarion Collection Harte and Garter Hotel and Spa'],
+            'london_2': ['GB113: Comfort Inn Victoria', 'GB209: Comfort Inn Westminster', 'GB125: Comfort Inn Buckingham Palace Road', 'GB049: Comfort Inn St Pancras - Kings Cross', 'GB157: Comfort Inn Edgware Road W2', 'GB182: Comfort Inn Hyde Park', 'GB645: Quality Hotel Hampstead', 'GB191: Clarion Collection Hotel Richmond Gate', 'GB193: Clarion Collection Harte and Garter Hotel and Spa']
+        }
 
-        except:
-            speech = 'Not working for ' + place
-            data = {}
+        hotel_names = available_properties[place.lower()+'_'+str(num_adults)]
+        hotel_names_string = '\t'.join(hotel_names)
+        speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
+        data = hotel_names
+
+        # except:
+        #     speech = 'Not working for ' + place
+        #     data = {}
 
     else:
         speech = 'No matching intent found ... python code returns None'
