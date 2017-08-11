@@ -3144,15 +3144,18 @@ def makeWebhookResult(req):
                 include_list = []
 
             if len(property_dict) > 1 and specific_key:
-
+                data = []
                 if specific_key in ['Pet-friendly Hotel', 'Free Hot Breakfast']:
                     flag = False
                     qualifying_properties = []
+                    
                     for p in property_dict:
                         d = property_details[p['id'].lower()]['property_details']
                         descriptions = [a['description'] for a in d['hotel']['amenities']]
                         if specific_key in descriptions:
                             qualifying_properties.append(p['name'] + ', ' + p['address'])
+                        data.append(descriptions)
+
                     if len(qualifying_properties) > 0:
                         all_qualifying_properties = ','.join(qualifying_properties)
                         if specific_key == 'Pet-friendly Hotel':
@@ -3211,6 +3214,7 @@ def makeWebhookResult(req):
                     descriptions = d['hotel']['phone']
                     speech = 'The contact number of ' + property_dict["name"] + ' is: ' + descriptions
                 data = descriptions
+            
             else:
                 speech = "Cannot fetch any data ... (python code)"
                 data = {}
