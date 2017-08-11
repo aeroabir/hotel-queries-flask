@@ -3107,8 +3107,9 @@ def makeWebhookResult(req):
         result = req.get("result")
         contexts = result.get("contexts")
 
-        # This context is coming from intent = "specific_question_single_property"
-        if contexts[0]['name'] == 'hotel-codes':
+        # 'hotel-codes' context is coming from intent = "specific_question_single_property"
+        # 'available-hotel-codes' is coming from find_hotels_in_an_area (intent)
+        if contexts[0]['name'] == 'hotel-codes' or contexts[0]['name'] == 'available-hotel-codes':
 
             parameters = contexts[0].get("parameters")
 
