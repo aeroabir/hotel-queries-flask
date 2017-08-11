@@ -3155,11 +3155,11 @@ def makeWebhookResult(req):
                         descriptions = [a['description'] for a in d['hotel']['amenities']]
                         if specific_key in descriptions:
                             # qualifying_properties.append(p['name'] + ', ' + p['address'])
-                            qualifying_properties.append(p['name'])
+                            qualifying_properties.append(p['id'].lower() + ': ' + p['name'])
                         data.append(descriptions)
 
                     if len(qualifying_properties) > 0:
-                        all_qualifying_properties = ','.join(qualifying_properties)
+                        all_qualifying_properties = '\n'.join(qualifying_properties)
                         if specific_key == 'Pet-friendly Hotel':
                             speech = all_qualifying_properties + ' will allow pets'
                         elif specific_key == 'Free Hot Breakfast':
@@ -3189,27 +3189,27 @@ def makeWebhookResult(req):
 
                 elif specific_key == 'amenities':
                     descriptions = [a['description'] for a in d['hotel']['amenities']]
-                    out_string = ','.join(descriptions)
+                    out_string = ', '.join(descriptions)
                     speech = "Following amenities are available in " + property_dict["name"] + ": " + out_string
 
                 elif specific_key == 'attractions':
                     descriptions = [a['name'] for a in d['hotel']['destinations']['attractions']]
-                    out_string = ';'.join(descriptions)
+                    out_string = '; '.join(descriptions)
                     speech = "There are " + str(len(descriptions)) + " places to visit near " + property_dict["name"] + ": " + out_string
 
                 elif specific_key == 'airports':
                     descriptions = [a['name'] for a in d['hotel']['destinations']['airports']]
-                    out_string = ';'.join(descriptions)
+                    out_string = '; '.join(descriptions)
                     speech = "There are " + str(len(descriptions)) + " airports near " + property_dict["name"] + ": " + out_string
 
                 elif specific_key == 'restaurants':
                     descriptions = [a['name'] for a in d['hotel']['destinations']['restaurants']]
-                    out_string = ';'.join(descriptions)
+                    out_string = '; '.join(descriptions)
                     speech = "There are " + str(len(descriptions)) + " restaurants near " + property_dict["name"] + ": " + out_string
 
                 elif specific_key == 'address':
                     descriptions = d['hotel']['address']
-                    out_string = ','.join([descriptions[k] for k in ['line1', 'city', 'postalCode', 'subdivision', 'country']])
+                    out_string = ', '.join([descriptions[k] for k in ['line1', 'city', 'postalCode', 'subdivision', 'country']])
                     speech = 'The address of ' + property_dict["name"] + ' is: ' + out_string
 
                 elif specific_key in ['phone', 'phone number', 'contact']:
@@ -3353,7 +3353,7 @@ def makeWebhookResult(req):
         }
 
         hotel_names = available_properties[place.lower()+'_'+str(num_adults)]
-        hotel_names_string = '\t'.join(hotel_names)
+        hotel_names_string = '\n'.join(hotel_names)
         speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
         data = hotel_names
         all_data = []
