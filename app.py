@@ -3309,7 +3309,8 @@ def makeWebhookResult(req):
 
         if 'geo-state-us' in parameters:
             state = parameters.get("geo-state-us")
-            place += ", " + state
+            if len(state) > 0:
+                place += ", " + state
 
         if 'start-date' in parameters:
             start_date = parameters.get("start-date")
