@@ -3153,20 +3153,21 @@ def makeWebhookResult(req):
                         d = property_details[p['id'].lower()]['property_details']
                         descriptions = [a['description'] for a in d['hotel']['amenities']]
                         if specific_key in descriptions:
-                            qualifying_properties.append(p['name'] + ', ' + p['address'])
+                            # qualifying_properties.append(p['name'] + ', ' + p['address'])
+                            qualifying_properties.append(p['name'])
                         data.append(descriptions)
 
                     if len(qualifying_properties) > 0:
                         all_qualifying_properties = ','.join(qualifying_properties)
                         if specific_key == 'Pet-friendly Hotel':
-                            speech = all_qualifying_properties + 'will allow pets'
+                            speech = all_qualifying_properties + ' will allow pets'
                         elif specific_key == 'Free Hot Breakfast':
                             speech = all_qualifying_properties + ' will provide free breakfast'
                     else:
                         if specific_key == 'Pet-friendly Hotel':
-                            speech = 'No property found that allows pets'
+                            speech = 'None of these properties allows pets'
                         elif specific_key == 'Free Hot Breakfast':
-                            speech = 'No matching property found that provides free breakfast'
+                            speech = 'None of these properties provides free breakfast'
 
             elif len(property_dict)==1 and specific_key:
                 # r = requests.post("https://www.choicehotels.com/webapi/hotel/"+property_dict['id'].lower(),
@@ -3298,6 +3299,13 @@ def makeWebhookResult(req):
 
     elif req.get("result").get("action") == "show.hotels":  # action name
 
+        available_properties = {
+            'boston_1': [u'MA225: enVision Hotel Boston-Everett, an Ascend Hotel Collection Member', u'MA199: enVision Hotel Boston-Longwood, an Ascend Hotel Collection Member', u'MA109: Comfort Inn', u'MA051: Comfort Inn & Suites Logan International Airport', u'MA129: Rodeway Inn Logan International Airport', u'MA080: Econo Lodge', u'MA230: Quality Inn', u'MA110: Comfort Inn', u'MA193: Comfort Inn Randolph - Boston', u'MA147: Quality Inn & Suites', u'MA245: Rodeway Inn', u'MA047: Comfort Inn Rockland - Boston', u'MA139: Econo Lodge', u'MA074: Econo Lodge', u'MA012: Rodeway Inn', u'MA036: Comfort Inn'],
+            'boston_2': [u'MA225: enVision Hotel Boston-Everett, an Ascend Hotel Collection Member', u'MA199: enVision Hotel Boston-Longwood, an Ascend Hotel Collection Member', u'MA109: Comfort Inn', u'MA051: Comfort Inn & Suites Logan International Airport', u'MA129: Rodeway Inn Logan International Airport', u'MA080: Econo Lodge', u'MA230: Quality Inn', u'MA110: Comfort Inn', u'MA193: Comfort Inn Randolph - Boston', u'MA147: Quality Inn & Suites', u'MA245: Rodeway Inn', u'MA047: Comfort Inn Rockland - Boston', u'MA139: Econo Lodge', u'MA074: Econo Lodge', u'MA012: Rodeway Inn', u'MA036: Comfort Inn'],
+            'london_1': [u'GB113: Comfort Inn Victoria', u'GB209: Comfort Inn Westminster', u'GB125: Comfort Inn Buckingham Palace Road', u'GB049: Comfort Inn St Pancras - Kings Cross', u'GB157: Comfort Inn Edgware Road W2', u'GB182: Comfort Inn Hyde Park', u'GB645: Quality Hotel Hampstead', u'GB191: Clarion Collection Hotel Richmond Gate', u'GB193: Clarion Collection Harte and Garter Hotel and Spa'],
+            'london_2': [u'GB113: Comfort Inn Victoria', u'GB209: Comfort Inn Westminster', u'GB125: Comfort Inn Buckingham Palace Road', u'GB049: Comfort Inn St Pancras - Kings Cross', u'GB157: Comfort Inn Edgware Road W2', u'GB182: Comfort Inn Hyde Park', u'GB645: Quality Hotel Hampstead', u'GB191: Clarion Collection Hotel Richmond Gate', u'GB193: Clarion Collection Harte and Garter Hotel and Spa']
+        }
+
         result = req.get("result")
         parameters = result.get("parameters")
 
@@ -3328,23 +3336,25 @@ def makeWebhookResult(req):
             num_adults = 1
 
         try:
-            # r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place})
-            r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place,
-                "adults": num_adults, "checkInDate": start_date, "checkOutDate": end_date,
-                "ratePlans": "RACK%2CPREPD%2CPROMO%2CSCPM", "rateType":"LOW_ALL"})
-            # speech = "Requesting for " + place + ' found: ' + str(r.status_code) + r.reason
-            if r.status_code == 200:
-                d = json.loads(r.text)
-                hotels = d['hotels']
-                # hotel_names = [h['name'] for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
-                hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
-                hotel_names_string = '\t'.join(hotel_names)
-                speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
-                data = hotel_names
-            else:
-                speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + ', ' + r.reason
-                data = {}
+            # r = requests.post("https://www.choicehotels.com/webapi/location/hotels", data={"placeName": place,
+            #     "adults": num_adults, "checkInDate": start_date, "checkOutDate": end_date,
+            #     "ratePlans": "RACK%2CPREPD%2CPROMO%2CSCPM", "rateType":"LOW_ALL"})
+            # if r.status_code == 200:
+            #     d = json.loads(r.text)
+            #     hotels = d['hotels']
+            #     hotel_names = [': '.join([h['id'], h['name']]) for h in hotels if h['hotelSectionType'] == 'AVAILABLE_HOTELS']
+            #     hotel_names_string = '\t'.join(hotel_names)
+            #     speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
+            #     data = hotel_names
+            # else:
+            #     speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + ', ' + r.reason
+            #     data = {}
 
+            hotel_names = available_properties[place+'_'+str(num_adults)]
+            hotel_names_string = '\t'.join(hotel_names)
+            speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
+            data = hotel_names
+            
         except:
             speech = 'Not working for ' + place
             data = {}
