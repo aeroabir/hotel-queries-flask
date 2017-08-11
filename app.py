@@ -3350,11 +3350,11 @@ def makeWebhookResult(req):
             #     speech = "Requesting for " + place + ' returned status: ' + str(r.status_code) + ', ' + r.reason
             #     data = {}
 
-            hotel_names = available_properties[place+'_'+str(num_adults)]
+            hotel_names = available_properties[place.lower()+'_'+str(num_adults)]
             hotel_names_string = '\t'.join(hotel_names)
             speech = "Found " + str(len(hotel_names)) + " hotel(s): " + hotel_names_string
             data = hotel_names
-            
+
         except:
             speech = 'Not working for ' + place
             data = {}
